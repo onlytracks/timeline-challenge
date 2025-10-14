@@ -9,38 +9,140 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiLoadsIndexRouteImport } from './routes/api/loads.index'
+import { Route as ApiEventsIndexRouteImport } from './routes/api/events.index'
+import { Route as ApiDriversIndexRouteImport } from './routes/api/drivers.index'
+import { Route as ApiLoadsIdRouteImport } from './routes/api/loads.$id'
+import { Route as ApiEventsIdRouteImport } from './routes/api/events.$id'
+import { Route as ApiDriversIdRouteImport } from './routes/api/drivers.$id'
 
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLoadsIndexRoute = ApiLoadsIndexRouteImport.update({
+  id: '/api/loads/',
+  path: '/api/loads/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEventsIndexRoute = ApiEventsIndexRouteImport.update({
+  id: '/api/events/',
+  path: '/api/events/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDriversIndexRoute = ApiDriversIndexRouteImport.update({
+  id: '/api/drivers/',
+  path: '/api/drivers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLoadsIdRoute = ApiLoadsIdRouteImport.update({
+  id: '/api/loads/$id',
+  path: '/api/loads/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEventsIdRoute = ApiEventsIdRouteImport.update({
+  id: '/api/events/$id',
+  path: '/api/events/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDriversIdRoute = ApiDriversIdRouteImport.update({
+  id: '/api/drivers/$id',
+  path: '/api/drivers/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/timeline': typeof TimelineRoute
+  '/api/drivers/$id': typeof ApiDriversIdRoute
+  '/api/events/$id': typeof ApiEventsIdRoute
+  '/api/loads/$id': typeof ApiLoadsIdRoute
+  '/api/drivers': typeof ApiDriversIndexRoute
+  '/api/events': typeof ApiEventsIndexRoute
+  '/api/loads': typeof ApiLoadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/timeline': typeof TimelineRoute
+  '/api/drivers/$id': typeof ApiDriversIdRoute
+  '/api/events/$id': typeof ApiEventsIdRoute
+  '/api/loads/$id': typeof ApiLoadsIdRoute
+  '/api/drivers': typeof ApiDriversIndexRoute
+  '/api/events': typeof ApiEventsIndexRoute
+  '/api/loads': typeof ApiLoadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/timeline': typeof TimelineRoute
+  '/api/drivers/$id': typeof ApiDriversIdRoute
+  '/api/events/$id': typeof ApiEventsIdRoute
+  '/api/loads/$id': typeof ApiLoadsIdRoute
+  '/api/drivers/': typeof ApiDriversIndexRoute
+  '/api/events/': typeof ApiEventsIndexRoute
+  '/api/loads/': typeof ApiLoadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/timeline'
+    | '/api/drivers/$id'
+    | '/api/events/$id'
+    | '/api/loads/$id'
+    | '/api/drivers'
+    | '/api/events'
+    | '/api/loads'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/timeline'
+    | '/api/drivers/$id'
+    | '/api/events/$id'
+    | '/api/loads/$id'
+    | '/api/drivers'
+    | '/api/events'
+    | '/api/loads'
+  id:
+    | '__root__'
+    | '/'
+    | '/timeline'
+    | '/api/drivers/$id'
+    | '/api/events/$id'
+    | '/api/loads/$id'
+    | '/api/drivers/'
+    | '/api/events/'
+    | '/api/loads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TimelineRoute: typeof TimelineRoute
+  ApiDriversIdRoute: typeof ApiDriversIdRoute
+  ApiEventsIdRoute: typeof ApiEventsIdRoute
+  ApiLoadsIdRoute: typeof ApiLoadsIdRoute
+  ApiDriversIndexRoute: typeof ApiDriversIndexRoute
+  ApiEventsIndexRoute: typeof ApiEventsIndexRoute
+  ApiLoadsIndexRoute: typeof ApiLoadsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +150,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/loads/': {
+      id: '/api/loads/'
+      path: '/api/loads'
+      fullPath: '/api/loads'
+      preLoaderRoute: typeof ApiLoadsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/events/': {
+      id: '/api/events/'
+      path: '/api/events'
+      fullPath: '/api/events'
+      preLoaderRoute: typeof ApiEventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/drivers/': {
+      id: '/api/drivers/'
+      path: '/api/drivers'
+      fullPath: '/api/drivers'
+      preLoaderRoute: typeof ApiDriversIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/loads/$id': {
+      id: '/api/loads/$id'
+      path: '/api/loads/$id'
+      fullPath: '/api/loads/$id'
+      preLoaderRoute: typeof ApiLoadsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/events/$id': {
+      id: '/api/events/$id'
+      path: '/api/events/$id'
+      fullPath: '/api/events/$id'
+      preLoaderRoute: typeof ApiEventsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/drivers/$id': {
+      id: '/api/drivers/$id'
+      path: '/api/drivers/$id'
+      fullPath: '/api/drivers/$id'
+      preLoaderRoute: typeof ApiDriversIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TimelineRoute: TimelineRoute,
+  ApiDriversIdRoute: ApiDriversIdRoute,
+  ApiEventsIdRoute: ApiEventsIdRoute,
+  ApiLoadsIdRoute: ApiLoadsIdRoute,
+  ApiDriversIndexRoute: ApiDriversIndexRoute,
+  ApiEventsIndexRoute: ApiEventsIndexRoute,
+  ApiLoadsIndexRoute: ApiLoadsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

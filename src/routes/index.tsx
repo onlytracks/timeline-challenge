@@ -13,6 +13,14 @@ function App() {
     >
       <div className="relative space-y-6 overflow-hidden px-6">
         <h1 className="text-center text-3xl">Welcome!</h1>
+        <ul
+          className="list-none **:[a]:hover:text-slate-300
+            **:[a]:hover:underline"
+        >
+          <li>
+            <Link to="/timeline">Go to Timeline</Link>
+          </li>
+        </ul>
       </div>
     </div>
   );
