@@ -1,23 +1,110 @@
-export interface Driver {
-  id: string;
-  name: string;
-}
+import { createServerFn } from "@tanstack/react-start";
+import { Driver, Load, LoadSchema } from "./models";
 
-export interface Load {
-  id: string;
-  availableHour: number;
-  durationHours: number;
-}
+const seedLoads: { availableHour: number; durationHours: number }[] = [
+  { availableHour: 8, durationHours: 12 },
+  { availableHour: 6, durationHours: 18 },
+  { availableHour: 10, durationHours: 8 },
+  { availableHour: 14, durationHours: 15 },
+  { availableHour: 7, durationHours: 22 },
+  { availableHour: 12, durationHours: 10 },
+  { availableHour: 9, durationHours: 16 },
+  { availableHour: 15, durationHours: 6 },
+  { availableHour: 11, durationHours: 20 },
+  { availableHour: 6, durationHours: 14 },
+  { availableHour: 13, durationHours: 9 },
+  { availableHour: 8, durationHours: 24 },
+  { availableHour: 16, durationHours: 11 },
+  { availableHour: 10, durationHours: 17 },
+  { availableHour: 7, durationHours: 13 },
+  { availableHour: 14, durationHours: 19 },
+  { availableHour: 9, durationHours: 7 },
+  { availableHour: 12, durationHours: 21 },
+  { availableHour: 6, durationHours: 5 },
+  { availableHour: 18, durationHours: 15 },
+  { availableHour: 11, durationHours: 12 },
+  { availableHour: 8, durationHours: 8 },
+  { availableHour: 15, durationHours: 16 },
+  { availableHour: 7, durationHours: 10 },
+  { availableHour: 13, durationHours: 14 },
+  { availableHour: 10, durationHours: 18 },
+  { availableHour: 6, durationHours: 22 },
+  { availableHour: 16, durationHours: 9 },
+  { availableHour: 9, durationHours: 13 },
+  { availableHour: 14, durationHours: 20 },
+  { availableHour: 8, durationHours: 11 },
+  { availableHour: 12, durationHours: 17 },
+  { availableHour: 7, durationHours: 6 },
+  { availableHour: 11, durationHours: 15 },
+  { availableHour: 15, durationHours: 19 },
+  { availableHour: 6, durationHours: 24 },
+  { availableHour: 10, durationHours: 12 },
+  { availableHour: 13, durationHours: 8 },
+  { availableHour: 9, durationHours: 14 },
+  { availableHour: 17, durationHours: 10 },
+  { availableHour: 8, durationHours: 16 },
+  { availableHour: 12, durationHours: 21 },
+  { availableHour: 6, durationHours: 7 },
+  { availableHour: 14, durationHours: 13 },
+  { availableHour: 11, durationHours: 18 },
+  { availableHour: 7, durationHours: 9 },
+  { availableHour: 16, durationHours: 15 },
+  { availableHour: 10, durationHours: 22 },
+  { availableHour: 13, durationHours: 11 },
+  { availableHour: 9, durationHours: 20 },
+  { availableHour: 6, durationHours: 12 },
+  { availableHour: 15, durationHours: 8 },
+  { availableHour: 8, durationHours: 17 },
+  { availableHour: 12, durationHours: 14 },
+  { availableHour: 7, durationHours: 19 },
+  { availableHour: 11, durationHours: 6 },
+  { availableHour: 14, durationHours: 16 },
+  { availableHour: 10, durationHours: 24 },
+  { availableHour: 6, durationHours: 10 },
+  { availableHour: 18, durationHours: 13 },
+  { availableHour: 9, durationHours: 15 },
+  { availableHour: 13, durationHours: 21 },
+  { availableHour: 8, durationHours: 9 },
+  { availableHour: 16, durationHours: 12 },
+  { availableHour: 11, durationHours: 18 },
+  { availableHour: 7, durationHours: 14 },
+  { availableHour: 15, durationHours: 22 },
+  { availableHour: 10, durationHours: 7 },
+  { availableHour: 12, durationHours: 11 },
+  { availableHour: 6, durationHours: 16 },
+  { availableHour: 14, durationHours: 20 },
+  { availableHour: 9, durationHours: 8 },
+  { availableHour: 17, durationHours: 13 },
+  { availableHour: 8, durationHours: 19 },
+  { availableHour: 13, durationHours: 15 },
+  { availableHour: 11, durationHours: 24 },
+  { availableHour: 7, durationHours: 10 },
+  { availableHour: 16, durationHours: 17 },
+  { availableHour: 10, durationHours: 6 },
+  { availableHour: 6, durationHours: 12 },
+  { availableHour: 15, durationHours: 14 },
+  { availableHour: 9, durationHours: 21 },
+  { availableHour: 12, durationHours: 9 },
+  { availableHour: 8, durationHours: 18 },
+  { availableHour: 14, durationHours: 11 },
+  { availableHour: 11, durationHours: 16 },
+  { availableHour: 7, durationHours: 22 },
+  { availableHour: 18, durationHours: 8 },
+  { availableHour: 10, durationHours: 13 },
+  { availableHour: 13, durationHours: 20 },
+  { availableHour: 6, durationHours: 15 },
+  { availableHour: 16, durationHours: 10 },
+  { availableHour: 9, durationHours: 17 },
+  { availableHour: 12, durationHours: 24 },
+  { availableHour: 8, durationHours: 7 },
+  { availableHour: 15, durationHours: 12 },
+  { availableHour: 11, durationHours: 19 },
+  { availableHour: 7, durationHours: 14 },
+  { availableHour: 14, durationHours: 16 },
+  { availableHour: 10, durationHours: 21 },
+];
 
-export interface Event {
-  id: string;
-  driverId: string;
-  loadId: string;
-  start: Date;
-  end: Date;
-}
-
-const driverStorage: Driver[] = [
+const drivers: Driver[] = [
   { id: "1", name: "Alice" },
   { id: "2", name: "Bob" },
   { id: "3", name: "Charlie" },
@@ -43,109 +130,6 @@ const driverStorage: Driver[] = [
   { id: "23", name: "Wendy" },
   { id: "24", name: "Xavier" },
   { id: "25", name: "Yasmin" },
-];
-
-const loadStorage: Load[] = [
-  { id: "1", availableHour: 8, durationHours: 12 },
-  { id: "2", availableHour: 6, durationHours: 18 },
-  { id: "3", availableHour: 10, durationHours: 8 },
-  { id: "4", availableHour: 14, durationHours: 15 },
-  { id: "5", availableHour: 7, durationHours: 22 },
-  { id: "6", availableHour: 12, durationHours: 10 },
-  { id: "7", availableHour: 9, durationHours: 16 },
-  { id: "8", availableHour: 15, durationHours: 6 },
-  { id: "9", availableHour: 11, durationHours: 20 },
-  { id: "10", availableHour: 6, durationHours: 14 },
-  { id: "11", availableHour: 13, durationHours: 9 },
-  { id: "12", availableHour: 8, durationHours: 24 },
-  { id: "13", availableHour: 16, durationHours: 11 },
-  { id: "14", availableHour: 10, durationHours: 17 },
-  { id: "15", availableHour: 7, durationHours: 13 },
-  { id: "16", availableHour: 14, durationHours: 19 },
-  { id: "17", availableHour: 9, durationHours: 7 },
-  { id: "18", availableHour: 12, durationHours: 21 },
-  { id: "19", availableHour: 6, durationHours: 5 },
-  { id: "20", availableHour: 18, durationHours: 15 },
-  { id: "21", availableHour: 11, durationHours: 12 },
-  { id: "22", availableHour: 8, durationHours: 8 },
-  { id: "23", availableHour: 15, durationHours: 16 },
-  { id: "24", availableHour: 7, durationHours: 10 },
-  { id: "25", availableHour: 13, durationHours: 14 },
-  { id: "26", availableHour: 10, durationHours: 18 },
-  { id: "27", availableHour: 6, durationHours: 22 },
-  { id: "28", availableHour: 16, durationHours: 9 },
-  { id: "29", availableHour: 9, durationHours: 13 },
-  { id: "30", availableHour: 14, durationHours: 20 },
-  { id: "31", availableHour: 8, durationHours: 11 },
-  { id: "32", availableHour: 12, durationHours: 17 },
-  { id: "33", availableHour: 7, durationHours: 6 },
-  { id: "34", availableHour: 11, durationHours: 15 },
-  { id: "35", availableHour: 15, durationHours: 19 },
-  { id: "36", availableHour: 6, durationHours: 24 },
-  { id: "37", availableHour: 10, durationHours: 12 },
-  { id: "38", availableHour: 13, durationHours: 8 },
-  { id: "39", availableHour: 9, durationHours: 14 },
-  { id: "40", availableHour: 17, durationHours: 10 },
-  { id: "41", availableHour: 8, durationHours: 16 },
-  { id: "42", availableHour: 12, durationHours: 21 },
-  { id: "43", availableHour: 6, durationHours: 7 },
-  { id: "44", availableHour: 14, durationHours: 13 },
-  { id: "45", availableHour: 11, durationHours: 18 },
-  { id: "46", availableHour: 7, durationHours: 9 },
-  { id: "47", availableHour: 16, durationHours: 15 },
-  { id: "48", availableHour: 10, durationHours: 22 },
-  { id: "49", availableHour: 13, durationHours: 11 },
-  { id: "50", availableHour: 9, durationHours: 20 },
-  { id: "51", availableHour: 6, durationHours: 12 },
-  { id: "52", availableHour: 15, durationHours: 8 },
-  { id: "53", availableHour: 8, durationHours: 17 },
-  { id: "54", availableHour: 12, durationHours: 14 },
-  { id: "55", availableHour: 7, durationHours: 19 },
-  { id: "56", availableHour: 11, durationHours: 6 },
-  { id: "57", availableHour: 14, durationHours: 16 },
-  { id: "58", availableHour: 10, durationHours: 24 },
-  { id: "59", availableHour: 6, durationHours: 10 },
-  { id: "60", availableHour: 18, durationHours: 13 },
-  { id: "61", availableHour: 9, durationHours: 15 },
-  { id: "62", availableHour: 13, durationHours: 21 },
-  { id: "63", availableHour: 8, durationHours: 9 },
-  { id: "64", availableHour: 16, durationHours: 12 },
-  { id: "65", availableHour: 11, durationHours: 18 },
-  { id: "66", availableHour: 7, durationHours: 14 },
-  { id: "67", availableHour: 15, durationHours: 22 },
-  { id: "68", availableHour: 10, durationHours: 7 },
-  { id: "69", availableHour: 12, durationHours: 11 },
-  { id: "70", availableHour: 6, durationHours: 16 },
-  { id: "71", availableHour: 14, durationHours: 20 },
-  { id: "72", availableHour: 9, durationHours: 8 },
-  { id: "73", availableHour: 17, durationHours: 13 },
-  { id: "74", availableHour: 8, durationHours: 19 },
-  { id: "75", availableHour: 13, durationHours: 15 },
-  { id: "76", availableHour: 11, durationHours: 24 },
-  { id: "77", availableHour: 7, durationHours: 10 },
-  { id: "78", availableHour: 16, durationHours: 17 },
-  { id: "79", availableHour: 10, durationHours: 6 },
-  { id: "80", availableHour: 6, durationHours: 12 },
-  { id: "81", availableHour: 15, durationHours: 14 },
-  { id: "82", availableHour: 9, durationHours: 21 },
-  { id: "83", availableHour: 12, durationHours: 9 },
-  { id: "84", availableHour: 8, durationHours: 18 },
-  { id: "85", availableHour: 14, durationHours: 11 },
-  { id: "86", availableHour: 11, durationHours: 16 },
-  { id: "87", availableHour: 7, durationHours: 22 },
-  { id: "88", availableHour: 18, durationHours: 8 },
-  { id: "89", availableHour: 10, durationHours: 13 },
-  { id: "90", availableHour: 13, durationHours: 20 },
-  { id: "91", availableHour: 6, durationHours: 15 },
-  { id: "92", availableHour: 16, durationHours: 10 },
-  { id: "93", availableHour: 9, durationHours: 17 },
-  { id: "94", availableHour: 12, durationHours: 24 },
-  { id: "95", availableHour: 8, durationHours: 7 },
-  { id: "96", availableHour: 15, durationHours: 12 },
-  { id: "97", availableHour: 11, durationHours: 19 },
-  { id: "98", availableHour: 7, durationHours: 14 },
-  { id: "99", availableHour: 14, durationHours: 16 },
-  { id: "100", availableHour: 10, durationHours: 21 },
 ];
 
 interface DriverState {
@@ -181,13 +165,8 @@ function getNextValidStartTime(
   return candidateTime;
 }
 
-function buildSchedule(
-  startDate: Date,
-  endDate: Date,
-  loads: Load[],
-  drivers: Driver[],
-): Event[] {
-  const events: Event[] = [];
+function buildSchedule(startDate: Date, endDate: Date): Load[] {
+  const loads: Load[] = [];
   const driverStates: DriverState[] = drivers.map((driver) => ({
     driver,
     nextAvailable: new Date(startDate),
@@ -196,14 +175,14 @@ function buildSchedule(
   }));
 
   let loadIndex = 0;
-  let eventIdCounter = 1;
+  let loadIdCounter = 1;
   let currentTime = new Date(startDate);
-  const maxIterations = loads.length * drivers.length * 100;
+  const maxIterations = seedLoads.length * drivers.length * 100;
   let iterations = 0;
 
   while (currentTime < endDate && iterations < maxIterations) {
     iterations++;
-    const load = loads[loadIndex];
+    const load = seedLoads[loadIndex];
 
     const availableDrivers = driverStates.filter(
       (ds) => ds.nextAvailable <= currentTime || ds.nextAvailable < endDate,
@@ -228,7 +207,7 @@ function buildSchedule(
     );
 
     if (startTime >= endDate) {
-      loadIndex = (loadIndex + 1) % loads.length;
+      loadIndex = (loadIndex + 1) % seedLoads.length;
       if (loadIndex === 0) {
         currentTime = new Date(currentTime.getTime() + 3600000);
       }
@@ -239,10 +218,12 @@ function buildSchedule(
       startTime.getTime() + load.durationHours * 3600000,
     );
 
-    events.push({
-      id: String(eventIdCounter++),
+    const id = loadIdCounter++;
+
+    loads.push({
+      id: String(id),
+      name: `Load ${id}`,
       driverId: driverWithMinHours.driver.id,
-      loadId: load.id,
       start: startTime,
       end: endTime,
     });
@@ -250,7 +231,7 @@ function buildSchedule(
     driverWithMinHours.nextAvailable = new Date(endTime.getTime() + 3600000);
     driverWithMinHours.totalHours += load.durationHours;
 
-    loadIndex = (loadIndex + 1) % loads.length;
+    loadIndex = (loadIndex + 1) % seedLoads.length;
 
     const minNextAvailable = Math.min(
       ...driverStates.map((ds) => ds.nextAvailable.getTime()),
@@ -258,36 +239,38 @@ function buildSchedule(
     currentTime = new Date(Math.max(currentTime.getTime(), minNextAvailable));
   }
 
-  return events.sort((a, b) => a.start.getTime() - b.start.getTime());
+  return loads.sort((a, b) => a.start.getTime() - b.start.getTime());
 }
 
-const eventStorage: Event[] = buildSchedule(
+const loadStorage: Load[] = buildSchedule(
   new Date(),
   new Date(Date.now() + 14 * 24 * 3600000), // 14 days
-  loadStorage,
-  driverStorage,
 );
 
-export function getDrivers() {
-  return driverStorage;
-}
+export const getServerDrivers = createServerFn().handler(async () => {
+  return drivers;
+});
 
-export function getDriver(id: string) {
-  return driverStorage.find((driver) => driver.id === id) || null;
-}
+export const getServerDriver = createServerFn()
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return drivers.find((driver) => driver.id === data.id) || null;
+  });
 
-export function getLoads() {
+export const getServerLoads = createServerFn().handler(async () => {
+  await new Promise((r) => setTimeout(r, 1000));
   return loadStorage;
-}
+});
 
-export function getLoad(id: string) {
-  return loadStorage.find((load) => load.id === id) || null;
-}
+export const getServerLoad = createServerFn()
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return loadStorage.find((load) => load.id === data.id) || null;
+  });
 
-export function getEvents() {
-  return eventStorage;
-}
-
-export function getEvent(id: string) {
-  return eventStorage.find((event) => event.id === id) || null;
-}
+export const createServerLoad = createServerFn()
+  .inputValidator(LoadSchema)
+  .handler(({ data }) => {
+    loadStorage.push(data);
+    return data;
+  });

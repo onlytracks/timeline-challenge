@@ -12,8 +12,15 @@
     "check": "prettier --write . && eslint --fix"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@tailwindcss/postcss": "^4.1.14",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-devtools": "^0.7.6",
+    "@tanstack/react-form": "^1.23.7",
     "@tanstack/react-query": "^5.90.3",
     "@tanstack/react-query-devtools": "^5.90.2",
     "@tanstack/react-router": "^1.132.47",
@@ -21,13 +28,18 @@
     "@tanstack/react-router-ssr-query": "^1.132.47",
     "@tanstack/react-start": "^1.132.56",
     "@tanstack/router-plugin": "^1.132.56",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.545.0",
+    "postcss": "^8.5.6",
     "react": "^19.2.0",
     "react-calendar-timeline": "0.30.0-beta.3",
     "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.14",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tanstack/eslint-config": "^0.3.2",

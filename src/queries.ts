@@ -1,29 +1,21 @@
-import { Driver, Event } from "@/data/db";
-import { queryOptions } from "@tanstack/react-query";
-import { parseISO } from "date-fns";
+import { getServerDrivers, getServerLoads } from "@/data/db";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 
-export function driversQueryOptions() {
-  return queryOptions<Driver[]>({
+export function useDriversQuery() {
+  const fetch = useServerFn(getServerDrivers);
+  return useQuery({
     queryKey: ["drivers"],
-    queryFn: () => fetch("/api/drivers").then((res) => res.json()),
+    queryFn: () => fetch(),
     staleTime: 5 * 1000,
   });
 }
 
-export function eventsQueryOptions() {
-  return queryOptions<Event[]>({
-    queryKey: ["events"],
-    queryFn: () =>
-      fetch("/api/events")
-        .then((res) => res.json())
-        .then(
-          (data) =>
-            data.map((event: any) => ({
-              ...event,
-              start: parseISO(event.start),
-              end: parseISO(event.end),
-            })) as Event[],
-        ),
+export function useLoadsQuery() {
+  const fetch = useServerFn(getServerLoads);
+  return useQuery({
+    queryKey: ["loads"],
+    queryFn: () => fetch(),
     staleTime: 5 * 1000,
   });
 }

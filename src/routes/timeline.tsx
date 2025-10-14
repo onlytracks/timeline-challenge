@@ -1,10 +1,12 @@
-import { Driver, Event } from "@/data/db";
-import { driversQueryOptions, eventsQueryOptions } from "@/queries";
-import { useQuery } from "@tanstack/react-query";
+import { LoadForm } from "@/components/load-form";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { useDriversQuery, useLoadsQuery } from "@/queries";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { addHours } from "date-fns";
-import { LoaderCircleIcon } from "lucide-react";
-import { useMemo } from "react";
+import { LoaderCircleIcon, PlusIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   DateHeader,
   SidebarHeader,
@@ -18,8 +20,8 @@ export const Route = createFileRoute("/timeline")({
 });
 
 function RouteComponent() {
-  const { data: drivers } = useQuery<Array<Driver>>(driversQueryOptions());
-  const { data: events } = useQuery<Array<Event>>(eventsQueryOptions());
+  const { data: drivers } = useDriversQuery();
+  const { data: loads } = useLoadsQuery();
 
   const { groups, items, minStart, maxEnd } = useMemo(() => {
     const groups =
@@ -29,12 +31,12 @@ function RouteComponent() {
       })) ?? [];
 
     const items =
-      events?.map((event) => ({
-        id: event.id,
-        group: event.driverId,
-        title: `Load ${event.id}`,
-        start_time: event.start.valueOf(),
-        end_time: event.end.valueOf(),
+      loads?.map((load) => ({
+        id: load.id,
+        group: load.driverId,
+        title: load.name,
+        start_time: load.start.valueOf(),
+        end_time: load.end.valueOf(),
         itemProps: {
           className:
             "!bg-amber-700/80 font-semibold text-white rounded-sm box-border hover:!bg-slate-400 !border border-slate-200",
@@ -47,58 +49,72 @@ function RouteComponent() {
       minStart: new Date(),
       maxEnd: addHours(new Date(), 36),
     };
-  }, [events]);
+  }, [loads]);
+
+  const [addLoad, setAddLoad] = useState(false);
 
   return (
     <div className="flex h-screen w-full flex-col">
-      {groups.length && items.length && minStart && maxEnd ? (
-        <Timeline
-          groups={groups}
-          items={items}
-          // keys={keys}
-          itemTouchSendsClick={false}
-          // stackItems
-          // itemHeightRatio={0.75}
-          // showCursorLine
-          canMove={false}
-          canResize={false}
-          defaultTimeStart={minStart.valueOf()}
-          defaultTimeEnd={maxEnd.valueOf()}
-          className="relative flex-1"
-        >
-          <TimelineHeaders className="sticky top-0">
-            <SidebarHeader>
-              {({ getRootProps }) => {
-                return (
-                  <div
-                    {...getRootProps()}
-                    className="flex items-center border-r border-neutral-500
-                      bg-slate-600 font-semibold text-white"
-                  >
-                    Users
-                  </div>
-                );
-              }}
-            </SidebarHeader>
-            <DateHeader
-              unit="primaryHeader"
-              className="bg-slate-600 font-semibold text-white uppercase"
-            />
-            <DateHeader unit="hour" />
-          </TimelineHeaders>
-        </Timeline>
-      ) : (
-        <div
-          className="flex w-full flex-1 items-center justify-center gap-2
-            text-xl"
-        >
-          <LoaderCircleIcon className="animate-spin" />
-          Loading...
-        </div>
-      )}
-      <div
-        className="relative max-h-1/3 overflow-scroll bg-neutral-950 text-white"
+      <header
+        className="flex flex-none items-center justify-between bg-slate-600 p-1
+          text-lg text-white"
       >
+        <h1 className="text-lg font-bold">Load Schedule</h1>
+        <Button onClick={() => setAddLoad(true)}>
+          <PlusIcon />
+          New Load
+        </Button>
+      </header>
+      <div className="relative isolate flex-1">
+        {groups.length && items.length && minStart && maxEnd ? (
+          <Timeline
+            groups={groups}
+            items={items}
+            // keys={keys}
+            itemTouchSendsClick={false}
+            // stackItems
+            // itemHeightRatio={0.75}
+            // showCursorLine
+            canMove={false}
+            canResize={false}
+            defaultTimeStart={minStart.valueOf()}
+            defaultTimeEnd={maxEnd.valueOf()}
+            className="relative flex-1"
+          >
+            <TimelineHeaders className="sticky top-0">
+              <SidebarHeader>
+                {({ getRootProps }) => {
+                  return (
+                    <div
+                      {...getRootProps()}
+                      className="flex items-center border-t border-r
+                        border-neutral-300 bg-slate-600 p-1 font-semibold
+                        text-white"
+                    >
+                      Drivers
+                    </div>
+                  );
+                }}
+              </SidebarHeader>
+              <DateHeader
+                unit="primaryHeader"
+                className="bg-slate-600 font-semibold text-white uppercase"
+              />
+              <DateHeader unit="hour" />
+            </TimelineHeaders>
+          </Timeline>
+        ) : (
+          <div
+            className="flex h-full w-full items-center justify-center gap-2
+              text-xl"
+          >
+            <LoaderCircleIcon className="animate-spin" />
+            Loading...
+          </div>
+        )}
+      </div>
+
+      <div className="relative h-1/4 overflow-scroll bg-neutral-950 text-white">
         <h2
           className="sticky top-0 border-t border-b border-slate-500
             bg-slate-600 py-0.5 text-center font-semibold text-white uppercase"
@@ -112,6 +128,18 @@ function RouteComponent() {
           </div>
         ))}
       </div>
+
+      <Dialog open={addLoad} onOpenChange={setAddLoad}>
+        <DialogContent>
+          <DialogHeader className="border-b pb-2">
+            <DialogTitle className="font-semibold">New Load</DialogTitle>
+          </DialogHeader>
+          <LoadForm
+            onCancel={() => setAddLoad(false)}
+            onSubmit={async () => setAddLoad(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
