@@ -4,7 +4,6 @@ import { useAppForm } from "@/integrations/tanstack-forms/forms";
 import { useDriversQuery } from "@/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { format, parseISO } from "date-fns";
 import { MoveRightIcon, PackageIcon, PackageOpenIcon } from "lucide-react";
 import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { Field } from "./ui/field";
@@ -78,24 +77,13 @@ export function LoadForm({
         <div className="flex flex-col gap-4 sm:flex-row">
           <form.AppField name="start">
             {(field) => (
-              <field.InputField
-                type="datetime-local"
+              <field.InputDateTimeField
                 label={
                   <>
                     <PackageIcon className="size-4" /> Pickup
                   </>
                 }
                 className="w-fit"
-                value={
-                  field.state.value
-                    ? format(field.state.value, "yyyy-MM-dd'T'HH:mm")
-                    : ""
-                }
-                onChange={(e) =>
-                  field.handleChange(
-                    e.target.value.length ? parseISO(e.target.value) : null,
-                  )
-                }
               />
             )}
           </form.AppField>
@@ -106,24 +94,13 @@ export function LoadForm({
           </Field>
           <form.AppField name="end">
             {(field) => (
-              <field.InputField
-                type="datetime-local"
+              <field.InputDateTimeField
                 label={
                   <>
                     <PackageOpenIcon className="size-4" /> Dropoff
                   </>
                 }
                 className="w-fit"
-                value={
-                  field.state.value
-                    ? format(field.state.value, "yyyy-MM-dd'T'HH:mm")
-                    : ""
-                }
-                onChange={(e) =>
-                  field.handleChange(
-                    e.target.value.length ? parseISO(e.target.value) : null,
-                  )
-                }
               />
             )}
           </form.AppField>
