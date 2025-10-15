@@ -19,14 +19,33 @@ export const getServerDriver = createServerFn()
     return drivers.find((driver) => driver.id === data.id) || null;
   });
 
-export const getServerLoads = createServerFn().handler(async () => {
-  const raw = await readFile(LOADS_FILEPATH, "utf-8");
-  return JSON.parse(raw).map((load: any) => ({
-    ...load,
-    start: new Date(load.start),
-    end: new Date(load.end),
-  })) as Load[];
-});
+export const getServerLoads = createServerFn()
+  .inputValidator((data?: { query?: string }) => data)
+  .handler(async ({ data }) => {
+    const raw = await readFile(LOADS_FILEPATH, "utf-8");
+    const allLoads = JSON.parse(raw).map((load: any) => ({
+      ...load,
+      start: new Date(load.start),
+      end: new Date(load.end),
+    })) as Load[];
+
+    if (!data?.query?.length) {
+      return allLoads;
+    }
+
+    const drivers = await getServerDrivers();
+    const matchingDriverIds = drivers
+      .filter((driver) =>
+        driver.name.toLowerCase().includes(data.query!.toLowerCase()),
+      )
+      .map((d) => d.id);
+
+    return allLoads.filter(
+      (load) =>
+        matchingDriverIds.includes(load.driverId) ||
+        load.name.toLowerCase().includes(data.query!.toLowerCase()),
+    );
+  });
 
 export const getServerLoad = createServerFn()
   .inputValidator((data: { id: string }) => data)

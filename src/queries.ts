@@ -11,11 +11,11 @@ export function useDriversQuery() {
   });
 }
 
-export function useLoadsQuery() {
+export function useLoadsQuery(data: { query?: string }) {
   const fetch = useServerFn(getServerLoads);
   return useQuery({
-    queryKey: ["loads"],
-    queryFn: () => fetch(),
+    queryKey: ["loads", data?.query],
+    queryFn: () => fetch({ data }),
     // staleTime: 5 * 1000,
   });
 }
