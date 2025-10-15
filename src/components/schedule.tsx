@@ -17,7 +17,7 @@ export function LoadSchedule({
   loads: Load[];
   onLoadClick: (load: Load) => unknown;
 }) {
-  const { groups, items, minStart, maxEnd } = useMemo(() => {
+  const { groups, items, defaultTimeStart, defaultTimeEnd } = useMemo(() => {
     const now = new Date();
 
     const groups =
@@ -48,8 +48,8 @@ export function LoadSchedule({
     return {
       groups,
       items,
-      minStart: new Date(),
-      maxEnd: addHours(new Date(), 36),
+      defaultTimeStart: new Date(),
+      defaultTimeEnd: addHours(new Date(), 48),
     };
   }, [loads]);
 
@@ -62,8 +62,8 @@ export function LoadSchedule({
       itemHeightRatio={0.8}
       canMove={false}
       canResize={false}
-      defaultTimeStart={minStart.valueOf()}
-      defaultTimeEnd={maxEnd.valueOf()}
+      defaultTimeStart={defaultTimeStart.valueOf()}
+      defaultTimeEnd={defaultTimeEnd.valueOf()}
       className="relative flex-1"
       itemTouchSendsClick
       onItemClick={(id) => {
@@ -83,8 +83,8 @@ export function LoadSchedule({
             return (
               <div
                 {...getRootProps()}
-                className="flex items-center border-t border-r
-                  border-neutral-300 bg-slate-600 p-1 font-semibold text-white"
+                className="flex items-end bg-white p-1 font-semibold
+                  !text-black"
               >
                 Drivers
               </div>
@@ -97,6 +97,9 @@ export function LoadSchedule({
         />
         <DateHeader unit="hour" />
       </TimelineHeaders>
+      {/* <TodayMarker>
+        {({ styles }) => <div style={{ ...styles, backgroundColor: "#1e293b", width: "1px" }} />}
+      </TodayMarker> */}
     </Timeline>
   );
 }

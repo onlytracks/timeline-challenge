@@ -7,7 +7,7 @@ export function useDriversQuery() {
   return useQuery({
     queryKey: ["drivers"],
     queryFn: () => fetch(),
-    staleTime: 5 * 1000,
+    // staleTime: 5 * 1000,
   });
 }
 
@@ -16,6 +16,6 @@ export function useLoadsQuery() {
   return useQuery({
     queryKey: ["loads"],
     queryFn: () => fetch(),
-    staleTime: 5 * 1000,
+    // staleTime: 5 * 1000,
   });
 }

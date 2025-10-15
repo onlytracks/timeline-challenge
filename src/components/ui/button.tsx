@@ -52,7 +52,6 @@ function Button({
   disabled,
   onClick,
   asChild = false,
-  children,
   ...props
 }: Omit<React.ComponentProps<"button">, "onClick"> &
   VariantProps<typeof buttonVariants> & {
@@ -77,6 +76,17 @@ function Button({
     [onClick],
   );
 
+  const children = asChild ? (
+    props.children
+  ) : (
+    <>
+      {(busy || loading) && (
+        <LoaderCircleIcon className="size-4 animate-spin" />
+      )}
+      {props.children}
+    </>
+  );
+
   return (
     <Comp
       data-slot="button"
@@ -85,9 +95,6 @@ function Button({
       disabled={busy || loading || disabled}
       {...props}
     >
-      {!asChild && (busy || loading) && (
-        <LoaderCircleIcon className="size-4 animate-spin" />
-      )}
       {children}
     </Comp>
   );

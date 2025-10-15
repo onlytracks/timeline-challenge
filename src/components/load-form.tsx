@@ -120,7 +120,7 @@ export function LoadForm({
             )}
           </form.Subscribe>
         </div>
-        <div className="flex items-center justify-end gap-2">
+        <div className="ml-auto grid w-fit grid-flow-col auto-cols-fr gap-2">
           <form.CancelButton onClick={onCancel}>
             {readOnly ? "Close" : "Cancel"}
           </form.CancelButton>
