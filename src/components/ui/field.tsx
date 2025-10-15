@@ -213,15 +213,18 @@ function FieldError({
       return null;
     }
 
-    if (errors?.length == 1) {
-      return errors[0]?.message;
+    if (errors?.length == 1 && !!errors[0]) {
+      return typeof errors[0] === "string" ? errors[0] : errors[0]?.message;
     }
 
     return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
-        {errors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>,
+        {errors.map((error, index) =>
+          typeof error === "string" ? (
+            <li key={index}>{error}</li>
+          ) : (
+            error?.message && <li key={index}>{error.message}</li>
+          ),
         )}
       </ul>
     );

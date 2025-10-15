@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { Driver, Load, LoadSchema } from "./models";
+import { addDays, endOfDay, isBefore, startOfDay } from "date-fns";
 
 const seedLoads: { availableHour: number; durationHours: number }[] = [
   { availableHour: 8, durationHours: 12 },
@@ -243,8 +244,8 @@ function buildSchedule(startDate: Date, endDate: Date): Load[] {
 }
 
 const loadStorage: Load[] = buildSchedule(
-  new Date(),
-  new Date(Date.now() + 14 * 24 * 3600000), // 14 days
+  startOfDay(addDays(new Date(), -1)),
+  endOfDay(addDays(new Date(), 14)),
 );
 
 export const getServerDrivers = createServerFn().handler(async () => {
@@ -269,8 +270,63 @@ export const getServerLoad = createServerFn()
   });
 
 export const createServerLoad = createServerFn()
+  .inputValidator(LoadSchema.omit({ id: true }))
+  .handler(({ data }) => {
+    const load = {
+      ...data,
+      id: String(loadStorage.length + 1),
+    };
+
+    const conflicts = loadStorage.filter(
+      (existing) =>
+        existing.driverId === load.driverId &&
+        isBefore(existing.start, load.end) &&
+        isBefore(load.start, existing.end),
+    );
+
+    if (conflicts.length > 0) {
+      throw new Error(
+        "Load timing conflicts with existing loads for the driver.",
+      );
+    }
+
+    loadStorage.push(load);
+    return load;
+  });
+
+export const updateServerLoad = createServerFn()
   .inputValidator(LoadSchema)
   .handler(({ data }) => {
-    loadStorage.push(data);
+    const index = loadStorage.findIndex((load) => load.id === data.id);
+
+    const conflicts = loadStorage.filter(
+      (existing) =>
+        existing.id !== data.id &&
+        existing.driverId === data.driverId &&
+        isBefore(existing.start, data.end) &&
+        isBefore(data.start, existing.end),
+    );
+
+    if (conflicts.length > 0) {
+      throw new Error(
+        "Load timing conflicts with existing loads for the driver.",
+      );
+    }
+
+    if (index !== -1) {
+      loadStorage[index] = data;
+    }
     return data;
+  });
+
+export const deleteServerLoad = createServerFn()
+  .inputValidator((data: { id: string }) => data)
+  .handler(({ data }) => {
+    const index = loadStorage.findIndex((load) => load.id === data.id);
+    if (index !== -1) {
+      loadStorage.splice(index, 1);
+      return true;
+    }
+    // If the load doesn't exist, we consider it already "deleted"
+    return true;
   });

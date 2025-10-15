@@ -49,7 +49,7 @@ function SubmitButton({
           type={type}
           variant={variant}
           disabled={isSubmitting || disabled}
-          // loading={isSubmitting}
+          loading={isSubmitting}
           {...props}
         />
       )}

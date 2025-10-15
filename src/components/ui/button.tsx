@@ -1,7 +1,8 @@
-import * as React from "react";
+import { cn } from "@/utils/cn";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/utils/cn";
+import { LoaderCircleIcon } from "lucide-react";
+import * as React from "react";
 
 const buttonVariants = cva(
   `focus-visible:border-ring focus-visible:ring-ring/50
@@ -47,20 +48,48 @@ function Button({
   className,
   variant,
   size,
+  loading,
+  disabled,
+  onClick,
   asChild = false,
+  children,
   ...props
-}: React.ComponentProps<"button"> &
+}: Omit<React.ComponentProps<"button">, "onClick"> &
   VariantProps<typeof buttonVariants> & {
+    loading?: boolean;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => unknown;
     asChild?: boolean;
   }) {
   const Comp = asChild ? Slot : "button";
+
+  const [busy, setBusy] = React.useState(false);
+  const handleClick = React.useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      setBusy(true);
+      try {
+        await onClick?.(e);
+        setBusy(false);
+      } catch (err) {
+        setBusy(false);
+        throw err;
+      }
+    },
+    [onClick],
+  );
 
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
+      disabled={busy || loading || disabled}
       {...props}
-    />
+    >
+      {!asChild && (busy || loading) && (
+        <LoaderCircleIcon className="size-4 animate-spin" />
+      )}
+      {children}
+    </Comp>
   );
 }
 

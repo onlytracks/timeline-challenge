@@ -1,38 +1,34 @@
-import { createServerLoad } from "@/data/db";
 import { Load, LoadSchema } from "@/data/models";
 import { useAppForm } from "@/integrations/tanstack-forms/forms";
 import { useDriversQuery } from "@/queries";
-import { useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { addHours, isAfter, isBefore } from "date-fns";
 import { MoveRightIcon, PackageIcon, PackageOpenIcon } from "lucide-react";
 import { ReactNode, useEffect, useMemo, useRef } from "react";
+import z from "zod";
 import { Field } from "./ui/field";
 import { SelectItem } from "./ui/select";
 
-type FormData = {
-  id?: string;
-  name: string;
-  driverId: string;
-  start: Date | null;
-  end: Date | null;
-};
+const LoadFormSchema = LoadSchema.omit({ id: true });
+export type LoadFormData = z.output<typeof LoadFormSchema>;
 
 export function LoadForm({
   defaultValues: _defaultValues,
   onCancel,
+  onDelete,
   onSubmit,
-  onSubmitContent = "Create",
+  onSubmitContent = "Save",
+  readOnly = false,
 }: {
-  defaultValues?: Partial<FormData>;
-  onCancel: () => void;
-  onSubmit: (data: Load) => Promise<void>;
+  defaultValues?: Partial<Load>;
+  onCancel: () => unknown;
+  onDelete?: () => unknown;
+  onSubmit?: (data: LoadFormData) => unknown;
   onSubmitContent?: ReactNode;
+  readOnly?: boolean;
 }) {
-  const queryClient = useQueryClient();
-  const createLoad = useServerFn(createServerLoad);
   const { data: drivers } = useDriversQuery();
 
-  const defaultValues: FormData = useMemo(
+  const defaultValues = useMemo(
     () => ({
       name: _defaultValues?.name ?? "",
       driverId: _defaultValues?.driverId ?? "",
@@ -45,12 +41,11 @@ export function LoadForm({
   const form = useAppForm({
     defaultValues,
     validators: {
-      onSubmit: LoadSchema,
+      onSubmit: LoadFormSchema,
     },
     onSubmit: async (data) => {
-      const result = await createLoad({ data: LoadSchema.parse(data.value) });
-      await queryClient.invalidateQueries({ queryKey: ["loads"] });
-      await onSubmit(result);
+      if (readOnly) return;
+      await onSubmit?.(LoadFormSchema.parse(data.value));
     },
   });
 
@@ -61,11 +56,13 @@ export function LoadForm({
     <form.AppForm>
       <form.Form className="flex flex-col gap-4">
         <form.AppField name="name">
-          {(field) => <field.InputField ref={nameRef} label="Name" />}
+          {(field) => (
+            <field.InputField ref={nameRef} label="Name" readOnly={readOnly} />
+          )}
         </form.AppField>
         <form.AppField name="driverId">
           {(field) => (
-            <field.SelectField label="Driver">
+            <field.SelectField label="Driver" readOnly={readOnly}>
               {drivers?.map((driver) => (
                 <SelectItem key={driver.id} value={driver.id}>
                   {driver.name}
@@ -84,6 +81,7 @@ export function LoadForm({
                   </>
                 }
                 className="w-fit"
+                readOnly={readOnly}
               />
             )}
           </form.AppField>
@@ -92,22 +90,46 @@ export function LoadForm({
               <MoveRightIcon className="size-6 stroke-3 opacity-60" />
             </div>
           </Field>
-          <form.AppField name="end">
-            {(field) => (
-              <field.InputDateTimeField
-                label={
-                  <>
-                    <PackageOpenIcon className="size-4" /> Dropoff
-                  </>
-                }
-                className="w-fit"
-              />
+          <form.Subscribe selector={(state) => state.values.start}>
+            {(start) => (
+              <form.AppField
+                name="end"
+                validators={{
+                  onChange: ({ value }) => {
+                    if (value && isBefore(value, start)) {
+                      return "Must be after start date";
+                    }
+                    if (value && isAfter(value, addHours(start, 24))) {
+                      return "Cannot be longer than 24 hours";
+                    }
+                  },
+                }}
+              >
+                {(field) => (
+                  <field.InputDateTimeField
+                    label={
+                      <>
+                        <PackageOpenIcon className="size-4" /> Dropoff
+                      </>
+                    }
+                    className="w-fit"
+                    readOnly={readOnly}
+                  />
+                )}
+              </form.AppField>
             )}
-          </form.AppField>
+          </form.Subscribe>
         </div>
         <div className="flex items-center justify-end gap-2">
-          <form.CancelButton onClick={onCancel}>Cancel</form.CancelButton>
-          <form.SubmitButton>{onSubmitContent}</form.SubmitButton>
+          <form.CancelButton onClick={onCancel}>
+            {readOnly ? "Close" : "Cancel"}
+          </form.CancelButton>
+          {!readOnly && onDelete && (
+            <form.DeleteButton onClick={onDelete}>Delete</form.DeleteButton>
+          )}
+          {!readOnly && (
+            <form.SubmitButton>{onSubmitContent}</form.SubmitButton>
+          )}
         </div>
       </form.Form>
     </form.AppForm>

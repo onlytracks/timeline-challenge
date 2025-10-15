@@ -26,10 +26,13 @@ function SelectValue({
 function SelectTrigger({
   className,
   size = "default",
+  readOnly,
+  disabled,
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
+  readOnly?: boolean;
 }) {
   return (
     <SelectPrimitive.Trigger
@@ -49,8 +52,10 @@ function SelectTrigger({
         *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center
         *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none
         [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4`,
+        readOnly && "disabled:cursor-default disabled:opacity-100",
         className,
       )}
+      disabled={disabled || readOnly}
       {...props}
     >
       {children}
