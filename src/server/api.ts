@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { createServerFn } from "@tanstack/react-start";
-import { addDays, endOfDay, isBefore, startOfDay } from "date-fns";
+import { addDays, endOfDay, isBefore, isFuture, startOfDay } from "date-fns";
 import { LoadSchema } from "./models";
 import { seedSchedule } from "./seed";
 import type { Driver, Load } from "./models";
@@ -90,7 +90,9 @@ export const updateServerLoad = createServerFn()
   .handler(async ({ data }) => {
     const loads = await getServerLoads();
 
-    const index = loads.findIndex((load) => load.id === data.id);
+    if (!isFuture(data.start)) {
+      throw new Error("Cannot move or update loads that have already started.");
+    }
 
     const conflicts = loads.filter(
       (existing) =>
@@ -106,6 +108,7 @@ export const updateServerLoad = createServerFn()
       );
     }
 
+    const index = loads.findIndex((load) => load.id === data.id);
     if (index !== -1) {
       loads[index] = data;
     }

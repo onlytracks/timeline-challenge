@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { HomeIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import z from "zod";
 import type { Load } from "@/server/models";
 import { AddLoadDialog, EditLoadDialog } from "@/components/loads/dialogs";
@@ -35,13 +35,53 @@ function RouteComponent() {
 
   const { data: drivers } = useDriversQuery();
   const { data: loads, refetch: refetchLoads } = useLoadsQuery({ query });
-  const createLoad = useServerFn(createServerLoad);
-  const updateLoad = useServerFn(updateServerLoad);
-  const deleteLoad = useServerFn(deleteServerLoad);
-  const seedLoads = useServerFn(seedServerLoads);
 
   const [addLoad, setAddLoad] = useState(false);
   const [selectedLoad, setSelectedLoad] = useState<Load | null>(null);
+
+  const seedLoadsFn = useServerFn(seedServerLoads);
+
+  const createLoadFn = useServerFn(createServerLoad);
+  const createLoad = useCallback(
+    async (data: Omit<Load, "id">) => {
+      try {
+        await createLoadFn({ data });
+        await refetchLoads();
+        setAddLoad(false);
+      } catch (err) {
+        alert((err as Error).message);
+      }
+    },
+    [createLoadFn, refetchLoads],
+  );
+
+  const updateLoadFn = useServerFn(updateServerLoad);
+  const updateLoad = useCallback(
+    async (data: Load) => {
+      try {
+        await updateLoadFn({ data });
+        await refetchLoads();
+        setSelectedLoad(null);
+      } catch (err) {
+        alert((err as Error).message);
+      }
+    },
+    [updateLoadFn, refetchLoads],
+  );
+
+  const deleteLoadFn = useServerFn(deleteServerLoad);
+  const deleteLoad = useCallback(
+    async (data: { id: string }) => {
+      try {
+        await deleteLoadFn({ data });
+        await refetchLoads();
+        setSelectedLoad(null);
+      } catch (err) {
+        alert((err as Error).message);
+      }
+    },
+    [deleteLoadFn, refetchLoads],
+  );
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -82,6 +122,7 @@ function RouteComponent() {
           drivers={drivers ?? []}
           loads={loads ?? []}
           onLoadClick={setSelectedLoad}
+          onUpdateLoad={updateLoad}
         />
       </div>
 
@@ -94,7 +135,7 @@ function RouteComponent() {
                 "Are you sure you want to seed loads? This will overwrite existing loads.",
               )
             ) {
-              await seedLoads();
+              await seedLoadsFn();
               await router.invalidate({ sync: true });
               // TODO: this doesn't force a re-render of the timeline - it shows old data
             }
@@ -107,38 +148,14 @@ function RouteComponent() {
       <AddLoadDialog
         open={addLoad}
         onOpenChange={(open) => !open && setAddLoad(false)}
-        onSubmit={async (data) => {
-          try {
-            await createLoad({ data });
-            await refetchLoads();
-            setAddLoad(false);
-          } catch (err) {
-            alert((err as Error).message);
-          }
-        }}
+        onSubmit={createLoad}
       />
 
       <EditLoadDialog
         load={selectedLoad}
         onOpenChange={(open) => !open && setSelectedLoad(null)}
-        onSubmit={async (data) => {
-          try {
-            await updateLoad({ data });
-            await refetchLoads();
-            setSelectedLoad(null);
-          } catch (err) {
-            alert((err as Error).message);
-          }
-        }}
-        onDelete={async (data) => {
-          try {
-            await deleteLoad({ data });
-            await refetchLoads();
-            setSelectedLoad(null);
-          } catch (err) {
-            alert((err as Error).message);
-          }
-        }}
+        onSubmit={updateLoad}
+        onDelete={deleteLoad}
       />
     </div>
   );
