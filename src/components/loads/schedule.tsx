@@ -1,5 +1,3 @@
-import type { Driver, Load } from "@/server/models";
-import { cn } from "@/utils/cn";
 import { addHours, isBefore } from "date-fns";
 import { useMemo } from "react";
 import Timeline, {
@@ -7,6 +5,8 @@ import Timeline, {
   SidebarHeader,
   TimelineHeaders,
 } from "react-calendar-timeline";
+import type { Driver, Load } from "@/server/models";
+import { cn } from "@/utils/cn";
 
 export function LoadSchedule({
   drivers,

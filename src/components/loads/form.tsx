@@ -1,14 +1,14 @@
-import type { Load } from "@/server/models";
-import { LoadSchema } from "@/server/models";
-import { useAppForm } from "@/integrations/tanstack-forms/forms";
-import { useDriversQuery } from "@/queries";
 import { addHours, isAfter, isBefore } from "date-fns";
 import { MoveRightIcon, PackageIcon, PackageOpenIcon } from "lucide-react";
-import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef } from "react";
-import type z from "zod";
 import { Field } from "../ui/field";
 import { SelectItem } from "../ui/select";
+import type z from "zod";
+import type { ReactNode } from "react";
+import type { Load } from "@/server/models";
+import { useDriversQuery } from "@/queries";
+import { useAppForm } from "@/integrations/tanstack-forms/forms";
+import { LoadSchema } from "@/server/models";
 
 const LoadFormSchema = LoadSchema.omit({ id: true });
 export type LoadFormData = z.output<typeof LoadFormSchema>;

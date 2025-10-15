@@ -1,3 +1,9 @@
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { HomeIcon, PlusIcon } from "lucide-react";
+import { useState } from "react";
+import z from "zod";
+import type { Load } from "@/server/models";
 import { AddLoadDialog, EditLoadDialog } from "@/components/loads/dialogs";
 import { LoadSchedule } from "@/components/loads/schedule";
 import { Button } from "@/components/ui/button";
@@ -8,14 +14,8 @@ import {
   seedServerLoads,
   updateServerLoad,
 } from "@/server/api";
-import type { Load } from "@/server/models";
 import { useDriversQuery, useLoadsQuery } from "@/queries";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { HomeIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
 import "react-calendar-timeline/style.css";
-import z from "zod";
 
 const SearchSchema = z.object({
   query: z.string().optional(),

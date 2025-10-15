@@ -4,16 +4,20 @@ import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 
-const config = defineConfig({
+const config = defineConfig(({ mode }) => ({
   plugins: [
-    // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
     tailwindcss(),
-    tanstackStart(),
+    ...(mode !== "test" ? [tanstackStart()] : []),
     viteReact(),
   ],
-});
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+  },
+}));
 
 export default config;

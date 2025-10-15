@@ -1,15 +1,16 @@
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { isBefore } from "date-fns";
+import { PackageOpenIcon, TruckIcon } from "lucide-react";
+import { useMemo } from "react";
+import { LoadForm } from "./form";
+import type { LoadFormData } from "./form";
+import type { Load } from "@/server/models";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Load } from "@/server/models";
-import { DialogDescription } from "@radix-ui/react-dialog";
-import { isBefore } from "date-fns";
-import { PackageOpenIcon, TruckIcon } from "lucide-react";
-import { useMemo } from "react";
-import { LoadForm, LoadFormData } from "./form";
 
 export function AddLoadDialog({
   open,
