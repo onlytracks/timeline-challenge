@@ -1,10 +1,15 @@
-import { useMemo } from "react";
-import { LoadForm, LoadFormData } from "./load-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import type { Load } from "@/server/models";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { isBefore } from "date-fns";
 import { PackageOpenIcon, TruckIcon } from "lucide-react";
-import { Load } from "@/data/models";
-import { DialogDescription } from "@radix-ui/react-dialog";
+import { useMemo } from "react";
+import { LoadForm, LoadFormData } from "./form";
 
 export function AddLoadDialog({
   open,
@@ -26,7 +31,7 @@ export function AddLoadDialog({
         </DialogDescription>
         <LoadForm
           onCancel={() => onOpenChange(false)}
-          onSubmit={async (data) => onSubmit(data)}
+          onSubmit={(data) => onSubmit(data)}
         />
       </DialogContent>
     </Dialog>

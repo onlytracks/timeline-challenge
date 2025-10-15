@@ -1,10 +1,11 @@
 "use client";
 
-import { cn } from "@/utils/cn";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { useMemo } from "react";
 import { Label } from "./label";
 import { Separator } from "./separator";
+import type { VariantProps } from "class-variance-authority";
+import { cn } from "@/utils/cn";
 
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
@@ -213,7 +214,7 @@ function FieldError({
       return null;
     }
 
-    if (errors?.length == 1 && !!errors[0]) {
+    if (errors.length == 1 && !!errors[0]) {
       return typeof errors[0] === "string" ? errors[0] : errors[0]?.message;
     }
 

@@ -1,15 +1,16 @@
+import { readFile, writeFile } from "node:fs/promises";
 import { createServerFn } from "@tanstack/react-start";
 import { addDays, endOfDay, isBefore, startOfDay } from "date-fns";
-import { readFile, writeFile } from "fs/promises";
-import { Driver, Load, LoadSchema } from "./models";
+import { LoadSchema } from "./models";
 import { seedSchedule } from "./seed";
+import type { Driver, Load } from "./models";
 
-export const DRIVERS_FILEPATH = "src/data/drivers.json";
-export const LOADS_FILEPATH = "src/data/loads.json";
+export const DRIVERS_FILEPATH = "src/server/drivers.json";
+export const LOADS_FILEPATH = "src/server/loads.json";
 
 export const getServerDrivers = createServerFn().handler(async () => {
   const raw = await readFile(DRIVERS_FILEPATH, "utf-8");
-  return JSON.parse(raw) as Driver[];
+  return JSON.parse(raw) as Array<Driver>;
 });
 
 export const getServerDriver = createServerFn()
@@ -27,7 +28,7 @@ export const getServerLoads = createServerFn()
       ...load,
       start: new Date(load.start),
       end: new Date(load.end),
-    })) as Load[];
+    })) as Array<Load>;
 
     if (!data?.query?.length) {
       return allLoads;

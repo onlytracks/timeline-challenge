@@ -1,12 +1,14 @@
-import { Load, LoadSchema } from "@/data/models";
+import type { Load } from "@/server/models";
+import { LoadSchema } from "@/server/models";
 import { useAppForm } from "@/integrations/tanstack-forms/forms";
 import { useDriversQuery } from "@/queries";
 import { addHours, isAfter, isBefore } from "date-fns";
 import { MoveRightIcon, PackageIcon, PackageOpenIcon } from "lucide-react";
-import { ReactNode, useEffect, useMemo, useRef } from "react";
-import z from "zod";
-import { Field } from "./ui/field";
-import { SelectItem } from "./ui/select";
+import type { ReactNode } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import type z from "zod";
+import { Field } from "../ui/field";
+import { SelectItem } from "../ui/select";
 
 const LoadFormSchema = LoadSchema.omit({ id: true });
 export type LoadFormData = z.output<typeof LoadFormSchema>;
@@ -120,7 +122,7 @@ export function LoadForm({
             )}
           </form.Subscribe>
         </div>
-        <div className="ml-auto grid w-fit grid-flow-col auto-cols-fr gap-2">
+        <div className="ml-auto grid w-fit auto-cols-fr grid-flow-col gap-2">
           <form.CancelButton onClick={onCancel}>
             {readOnly ? "Close" : "Cancel"}
           </form.CancelButton>

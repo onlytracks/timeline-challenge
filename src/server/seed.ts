@@ -1,9 +1,8 @@
-import { writeFile } from "fs/promises";
-import { getServerDrivers, LOADS_FILEPATH } from "./db";
-import { Driver, Load, LoadSchema } from "./models";
-import { addDays, endOfDay, isBefore, startOfDay } from "date-fns";
+import { writeFile } from "node:fs/promises";
+import { LOADS_FILEPATH, getServerDrivers } from "./api";
+import type { Driver, Load } from "./models";
 
-const seedLoads: { availableHour: number; durationHours: number }[] = [
+const seedLoads: Array<{ availableHour: number; durationHours: number }> = [
   { availableHour: 8, durationHours: 12 },
   { availableHour: 6, durationHours: 18 },
   { availableHour: 10, durationHours: 8 },
@@ -110,7 +109,7 @@ interface DriverState {
   driver: Driver;
   nextAvailable: Date;
   totalHours: number;
-  lastBreakEnd: Date | null;
+  hoursSinceBreak: number;
 }
 
 function getNextValidStartTime(
@@ -140,14 +139,14 @@ function getNextValidStartTime(
 }
 
 export async function seedSchedule(startDate: Date, endDate: Date) {
-  const loads: Load[] = [];
+  const loads: Array<Load> = [];
 
   const drivers = await getServerDrivers();
-  const driverStates: DriverState[] = drivers.map((driver) => ({
+  const driverStates: Array<DriverState> = drivers.map((driver) => ({
     driver,
     nextAvailable: new Date(startDate),
     totalHours: 0,
-    lastBreakEnd: null,
+    hoursSinceBreak: 0,
   }));
 
   let loadIndex = 0;
@@ -204,8 +203,27 @@ export async function seedSchedule(startDate: Date, endDate: Date) {
       end: endTime,
     });
 
-    driverWithMinHours.nextAvailable = new Date(endTime.getTime() + 3600000);
+    let breakHours = 3;
+    let resetHours = false;
+
+    if (load.durationHours >= 16) {
+      breakHours = 12;
+      resetHours = true;
+    } else if (driverWithMinHours.hoursSinceBreak + load.durationHours >= 16) {
+      breakHours = 8;
+      resetHours = true;
+    }
+
+    driverWithMinHours.nextAvailable = new Date(
+      endTime.getTime() + breakHours * 3600000,
+    );
     driverWithMinHours.totalHours += load.durationHours;
+
+    if (resetHours) {
+      driverWithMinHours.hoursSinceBreak = 0;
+    } else {
+      driverWithMinHours.hoursSinceBreak += load.durationHours;
+    }
 
     loadIndex = (loadIndex + 1) % seedLoads.length;
 

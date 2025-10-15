@@ -1,8 +1,8 @@
+import type { Config } from "prettier";
+
 const functions = ["cn", "clsx", "cva"];
 
-/** @type {import("prettier").Config} */
-const config = {
-  // printWidth: 100,
+const config: Config = {
   tailwindFunctions: functions,
   customFunctions: functions,
   endingPosition: "absolute",
