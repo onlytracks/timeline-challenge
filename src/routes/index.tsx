@@ -137,7 +137,6 @@ function RouteComponent() {
             ) {
               await seedLoadsFn();
               await router.invalidate({ sync: true });
-              // TODO: this doesn't force a re-render of the timeline - it shows old data
             }
           }}
         >

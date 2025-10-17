@@ -40,9 +40,10 @@ export function LoadSchedule({
     driver: Driver;
   } | null>(null);
 
-  const items = useMemo(() => {
+  const { items, itemsHash } = useMemo(() => {
     const now = new Date();
-    return loads.map((load) => {
+
+    const mappedItems = loads.map((load) => {
       const group = groups.find((g) => g.id === load.driverId);
       const item = {
         id: load.id,
@@ -72,6 +73,11 @@ export function LoadSchedule({
 
       return item;
     });
+
+    return {
+      items: mappedItems,
+      itemsHash: now.valueOf().toString(),
+    };
   }, [loads, groups, pendingMove]);
 
   const handleItemClick = useCallback(
@@ -106,6 +112,7 @@ export function LoadSchedule({
   return (
     <div className="relative">
       <Timeline
+        key={itemsHash}
         groups={groups}
         items={items}
         itemHeightRatio={0.8}
