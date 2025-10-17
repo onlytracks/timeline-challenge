@@ -1,21 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { queryOptions } from "@tanstack/react-query";
 import { getServerDrivers, getServerLoads } from "@/server/api";
 
-export function useDriversQuery() {
-  const fetch = useServerFn(getServerDrivers);
-  return useQuery({
+export function driversQueryOptions() {
+  return queryOptions({
     queryKey: ["drivers"],
-    queryFn: () => fetch(),
-    // staleTime: 5 * 1000,
+    queryFn: () => getServerDrivers(),
+    staleTime: 30 * 1000,
   });
 }
 
-export function useLoadsQuery(data?: { query?: string }) {
-  const fetch = useServerFn(getServerLoads);
-  return useQuery({
-    queryKey: ["loads", data?.query],
-    queryFn: () => fetch({ data }),
-    // staleTime: 5 * 1000,
+export function useLoadsQueryOptions(data?: { query?: string }) {
+  return queryOptions({
+    queryKey: ["loads", data?.query ?? "all"],
+    queryFn: () => getServerLoads({ data }),
   });
 }

@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { addHours, isAfter, isBefore } from "date-fns";
 import { MoveRightIcon, PackageIcon, PackageOpenIcon } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
@@ -6,9 +7,9 @@ import { SelectItem } from "../ui/select";
 import type z from "zod";
 import type { ReactNode } from "react";
 import type { Load } from "@/server/models";
-import { useDriversQuery } from "@/queries";
-import { useAppForm } from "@/integrations/tanstack-forms/forms";
 import { LoadSchema } from "@/server/models";
+import { driversQueryOptions } from "@/queries";
+import { useAppForm } from "@/integrations/tanstack-forms/forms";
 
 const LoadFormSchema = LoadSchema.omit({ id: true });
 export type LoadFormData = z.output<typeof LoadFormSchema>;
@@ -28,7 +29,7 @@ export function LoadForm({
   onSubmitContent?: ReactNode;
   readOnly?: boolean;
 }) {
-  const { data: drivers } = useDriversQuery();
+  const { data: drivers } = useQuery(driversQueryOptions());
 
   const defaultValues = useMemo(
     () => ({

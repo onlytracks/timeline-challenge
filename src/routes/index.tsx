@@ -1,4 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { HomeIcon, PlusIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -8,13 +9,13 @@ import { AddLoadDialog, EditLoadDialog } from "@/components/loads/dialogs";
 import { LoadSchedule } from "@/components/loads/schedule";
 import { Button } from "@/components/ui/button";
 import { Searchbar } from "@/components/ui/searchbar";
+import { driversQueryOptions, useLoadsQueryOptions } from "@/queries";
 import {
   createServerLoad,
   deleteServerLoad,
   seedServerLoads,
   updateServerLoad,
 } from "@/server/api";
-import { useDriversQuery, useLoadsQuery } from "@/queries";
 import "react-calendar-timeline/style.css";
 
 const SearchSchema = z.object({
@@ -25,16 +26,25 @@ export const Route = createFileRoute("/")({
   component: RouteComponent,
   validateSearch: SearchSchema,
   loaderDeps: ({ search }) => ({ query: search.query }),
+  loader: async ({ context, deps: { query } }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(driversQueryOptions()),
+      context.queryClient.ensureQueryData(useLoadsQueryOptions({ query })),
+    ]);
+  },
   ssr: false,
 });
 
 function RouteComponent() {
-  const router = useRouter();
   const navigate = Route.useNavigate();
   const { query } = Route.useLoaderDeps();
 
-  const { data: drivers } = useDriversQuery();
-  const { data: loads, refetch: refetchLoads } = useLoadsQuery({ query });
+  const { data: drivers, refetch: refetchDrivers } = useQuery(
+    driversQueryOptions(),
+  );
+  const { data: loads, refetch: refetchLoads } = useQuery(
+    useLoadsQueryOptions({ query }),
+  );
 
   const [addLoad, setAddLoad] = useState(false);
   const [selectedLoad, setSelectedLoad] = useState<Load | null>(null);
@@ -136,7 +146,8 @@ function RouteComponent() {
               )
             ) {
               await seedLoadsFn();
-              await router.invalidate({ sync: true });
+              await refetchDrivers();
+              await refetchLoads();
             }
           }}
         >
